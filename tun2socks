@@ -32,16 +32,18 @@ ifconfig tun0 10.0.0.1 netmask 255.255.255.0
 # on the remote SSH server:
 # badvpn-udpgw --listen-addr 127.0.0.1:7300
 
-# Now start the badvpn-tun2socks program:
-# Note that the address 10.0.0.2 is not a typo. It specifies the IP address of the virtual
-# router inside the TUN device, and must be different from the IP of the
-# TUN interface itself (but in the same subnet).
-badvpn-tun2socks --tundev tun0 --netif-ipaddr 10.0.0.2 --netif-netmask 255.255.255.0 --socks-server-addr 127.0.0.1:8080 --udpgw-remote-server-addr 127.0.0.1:7300 --loglevel 0
-
 # All that remains is to route connections through the TUN device
 # instead of the existing default gateway. This is done as follows:
 route add default gw 10.0.0.2 metric 6
 
 # Finally switch the nameserver in /etc/resolv.conf to a public one:
-cat "nameserver 8.8.8.8" >/etc/resolv.conf
+echo "nameserver 8.8.8.8" >/etc/resolv.conf
+
+echo "Starting badvpn-tun2socks"
+
+# Now start the badvpn-tun2socks program:
+# Note that the address 10.0.0.2 is not a typo. It specifies the IP address of the virtual
+# router inside the TUN device, and must be different from the IP of the
+# TUN interface itself (but in the same subnet).
+badvpn-tun2socks --tundev tun0 --netif-ipaddr 10.0.0.2 --netif-netmask 255.255.255.0 --socks-server-addr 127.0.0.1:8080 --udpgw-remote-server-addr 127.0.0.1:7300 --loglevel 1
 
